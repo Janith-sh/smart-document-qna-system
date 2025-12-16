@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { embeddingModel } from "@/lib/gemini";
-import { chroma, COLLECTION_NAME } from "@/lib/chroma";
+import { pinecone, INDEX_NAME } from "@/lib/pinecone";
 import { v4 as uuidv4 } from "uuid";
 
 export async function GET() {
@@ -10,17 +10,15 @@ export async function GET() {
   const embeddingResult = await embeddingModel.embedContent(text);
   const embedding = embeddingResult.embedding.values;
 
-  // Get or create collection
-  const collection = await chroma.getOrCreateCollection({
-    name: COLLECTION_NAME,
-  });
+  // Get Pinecone index
+  const index = pinecone.index(INDEX_NAME);
 
   // Store in vector DB
-  await collection.add({
-    ids: [uuidv4()],
-    embeddings: [embedding],
-    documents: [text],
-  });
+  await index.upsert([{
+    id: uuidv4(),
+    values: embedding,
+    metadata: { text },
+  }]);
 
   return NextResponse.json({
     message: "Embedding stored successfully!",
