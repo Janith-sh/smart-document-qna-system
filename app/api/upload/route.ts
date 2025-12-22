@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { pinecone, INDEX_NAME } from "@/lib/pinecone";
-import { embeddingModel } from "@/lib/gemini";
+import { generateEmbedding } from "@/lib/gemini";
 import { v4 as uuidv4 } from "uuid";
 import { extractTextFromPDF } from "@/lib/pdfReader";
 
@@ -86,9 +86,8 @@ export async function POST(req: Request) {
     for (let i = 0; i < chunks.length; i++) {
       const chunk = chunks[i];
       
-      // Generate embedding using Gemini
-      const result = await embeddingModel.embedContent(chunk);
-      const embedding = result.embedding.values;
+      // Generate embedding using Gemini REST API
+      const embedding = await generateEmbedding(chunk);
       
       vectors.push({
         id: uuidv4(),

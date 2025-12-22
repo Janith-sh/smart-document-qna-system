@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 
+
 export default function Home() {
   const [file, setFile] = useState<File | null>(null);
   const [status, setStatus] = useState("");
@@ -42,6 +43,38 @@ export default function Home() {
       setLoading(false);
     }
   };
+
+const [question, setQuestion] = useState("");
+const [answer, setAnswer] = useState("");
+
+const askQuestion = async () => {
+  if (!question.trim()) {
+    setAnswer("Please enter a question first.");
+    return;
+  }
+
+  setAnswer("Thinking...");
+  
+  try {
+    const res = await fetch("/api/ask", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ question }),
+    });
+
+    const data = await res.json();
+    
+    if (res.ok) {
+      setAnswer(data.answer || "No answer received.");
+    } else {
+      setAnswer(`Error: ${data.error || "Failed to get answer"}`);
+    }
+  } catch (error) {
+    setAnswer("Error: Failed to connect to the server.");
+    console.error(error);
+  }
+};
+
 
   return (
     <main className="p-10 max-w-2xl mx-auto">
@@ -96,6 +129,31 @@ export default function Home() {
             )}
           </div>
         )}
+        <div className="mt-10">
+  <h2 className="text-xl font-bold mb-2">Ask a Question</h2>
+
+  <input
+    value={question}
+    onChange={(e) => setQuestion(e.target.value)}
+    placeholder="Ask something about the document..."
+    className="border p-2 w-full mb-2"
+  />
+
+  <button
+    onClick={askQuestion}
+    className="bg-blue-600 text-white px-4 py-2 rounded"
+  >
+    Ask
+  </button>
+
+  {answer && (
+    <div className="mt-4 p-4 border rounded bg-gray-50">
+      <strong>Answer:</strong>
+      <p>{answer}</p>
+    </div>
+  )}
+</div>
+
       </div>
     </main>
   );

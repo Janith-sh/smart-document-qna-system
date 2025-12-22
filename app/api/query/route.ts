@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { pinecone, INDEX_NAME } from "@/lib/pinecone";
-import { embeddingModel } from "@/lib/gemini";
+import { generateEmbedding } from "@/lib/gemini";
 
 export async function POST(req: Request) {
   try {
@@ -13,9 +13,8 @@ export async function POST(req: Request) {
       );
     }
 
-    // Generate embedding for the query
-    const result = await embeddingModel.embedContent(query);
-    const queryEmbedding = result.embedding.values;
+    // Generate embedding for the query using REST API
+    const queryEmbedding = await generateEmbedding(query);
 
     // Search Pinecone
     const index = pinecone.index(INDEX_NAME);
