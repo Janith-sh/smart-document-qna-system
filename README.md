@@ -1,11 +1,11 @@
 # Smart Document Q&A System
 
-A powerful document question-answering system built with Next.js, Google Gemini AI, and ChromaDB for intelligent vector search and semantic understanding.
+A powerful document question-answering system built with Next.js, Google Gemini AI, and Pinecone for intelligent vector search and semantic understanding.
 
 ## 🚀 Features
 
 - **AI-Powered Embeddings**: Uses Google Gemini's `text-embedding-004` model to generate high-quality vector embeddings
-- **Vector Database**: ChromaDB for efficient similarity search and storage
+- **Vector Database**: Pinecone for efficient similarity search and storage
 - **Modern Stack**: Built with Next.js 16, TypeScript, and Tailwind CSS
 - **API-First Design**: RESTful API endpoints for document processing and querying
 
@@ -14,9 +14,9 @@ A powerful document question-answering system built with Next.js, Google Gemini 
 Before running this project, ensure you have:
 
 - Node.js 20.x or higher
-- Python 3.9 or higher
 - npm or yarn package manager
 - Google Gemini API key ([Get one here](https://makersuite.google.com/app/apikey))
+- Pinecone API key ([Get one here](https://www.pinecone.io/))
 
 ## 🛠️ Installation
 
@@ -35,35 +35,20 @@ npm install --ignore-scripts
 
 > **Note**: We use `--ignore-scripts` flag due to a known npm postinstall issue on some Windows systems.
 
-### 3. Install Python Dependencies
-
-```bash
-pip install chromadb fastapi opentelemetry-instrumentation opentelemetry-instrumentation-fastapi
-```
-
-### 4. Set Up Environment Variables
+### 3. Set Up Environment Variables
 
 Create a `.env.local` file in the root directory:
 
 ```env
 GEMINI_API_KEY=your_gemini_api_key_here
+PINECONE_API_KEY=your_pinecone_api_key_here
 ```
 
-Replace `your_gemini_api_key_here` with your actual Google Gemini API key.
+Replace with your actual API keys from Google Gemini and Pinecone.
 
 ## 🚀 Running the Application
 
-### 1. Start ChromaDB Server
-
-In a terminal window, run:
-
-```bash
-python -m uvicorn chromadb.app:app --host localhost --port 8000
-```
-
-The ChromaDB server will start on `http://localhost:8000`
-
-### 2. Start Next.js Development Server
+### Start Next.js Development Server
 
 In another terminal window, run:
 
@@ -93,7 +78,7 @@ Expected output:
 
 This confirms:
 - ✅ Gemini AI embeddings are working
-- ✅ ChromaDB is storing vectors
+- ✅ Pinecone is storing vectors
 - ✅ Next.js API is connected
 
 ## 📁 Project Structure
@@ -110,8 +95,9 @@ doc-qna-ai/
 │   ├── layout.tsx
 │   └── page.tsx
 ├── lib/
-│   ├── chroma.ts              # ChromaDB client configuration
+│   ├── pinecone.ts            # Pinecone client configuration
 │   ├── chunker.ts             # Document chunking utilities
+│   ├── pdfReader.ts           # PDF document reading utilities
 │   └── gemini.ts              # Google Gemini AI configuration
 ├── public/
 ├── .env.local                 # Environment variables (not in git)
@@ -129,11 +115,11 @@ Configures two models:
 - **gemini-1.5-flash**: For text generation
 - **text-embedding-004**: For creating embeddings (768 dimensions)
 
-### ChromaDB Client (`lib/chroma.ts`)
+### Pinecone Client (`lib/pinecone.ts`)
 
 Manages vector database connections and operations:
-- Collection name: `documents`
-- Server: `http://localhost:8000`
+- Index name: `documents`
+- Cloud-based vector storage
 
 ### API Routes
 
@@ -146,32 +132,28 @@ Manages vector database connections and operations:
 - **[TypeScript](https://www.typescriptlang.org/)**: Type-safe JavaScript
 - **[Tailwind CSS](https://tailwindcss.com/)**: Utility-first CSS framework
 - **[Google Gemini AI](https://ai.google.dev/)**: Advanced language models
-- **[ChromaDB](https://www.trychroma.com/)**: Open-source embedding database
+- **[Pinecone](https://www.pinecone.io/)**: Scalable vector database
+- **[unpdf](https://www.npmjs.com/package/unpdf)**: PDF document parsing
 - **[UUID](https://www.npmjs.com/package/uuid)**: Unique identifier generation
 
 ## 📦 Dependencies
 
 ### Node.js Packages
 - `@google/generative-ai`: Google Gemini API client
-- `chromadb`: ChromaDB JavaScript client
-- `pdf-parse`: PDF document parsing
+- `@pinecone-database/pinecone`: Pinecone vector database client
+- `unpdf`: PDF document parsing
 - `uuid`: UUID generation
+- `lucide-react`: Icon library
 - `next`, `react`, `react-dom`: Core framework
-
-### Python Packages
-- `chromadb`: Vector database server
-- `fastapi`: API framework for ChromaDB
-- `uvicorn`: ASGI server
-- `opentelemetry-*`: Observability tools
 
 ## 🐛 Troubleshooting
 
-### ChromaDB Connection Issues
+### Pinecone Connection Issues
 
 If you see connection errors:
-1. Ensure ChromaDB server is running on port 8000
-2. Check that no firewall is blocking localhost connections
-3. Verify Python dependencies are installed
+1. Verify your Pinecone API key is correct in `.env.local`
+2. Ensure you have created an index named `documents` in your Pinecone dashboard
+3. Check your internet connection
 
 ### npm Install Errors
 
@@ -190,7 +172,7 @@ node node_modules/next/dist/bin/next dev
 ## 🔐 Security Notes
 
 - Never commit `.env.local` to version control
-- Keep your Gemini API key secure
+- Keep your Gemini and Pinecone API keys secure
 - Use environment variables for all sensitive data
 
 ## 📝 License
@@ -203,4 +185,4 @@ Contributions, issues, and feature requests are welcome!
 
 ---
 
-Built with ❤️ using Next.js, Google Gemini AI, and ChromaDB
+Built with ❤️ using Next.js, Google Gemini AI, and Pinecone
